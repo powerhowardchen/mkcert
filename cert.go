@@ -49,7 +49,7 @@ func init() {
 
 func (m *mkcert) makeCert(hosts []string) {
 	if m.caKey == nil {
-		log.Fatalln("ERROR: can't create new certificates because the CA key (rootCA-key.pem) is missing")
+		log.Fatalln("ERROR: can't create new certificates because the CA key (rootCA.key) is missing")
 	}
 
 	priv, err := m.generateKey(false)
@@ -159,7 +159,7 @@ func (m *mkcert) generateKey(rootCA bool) (crypto.PrivateKey, error) {
 		return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	}
 	if rootCA {
-		return rsa.GenerateKey(rand.Reader, 3072)
+		return rsa.GenerateKey(rand.Reader, 8192)
 	}
 	return rsa.GenerateKey(rand.Reader, 2048)
 }
@@ -174,11 +174,11 @@ func (m *mkcert) fileNames(hosts []string) (certFile, keyFile, p12File string) {
 		defaultName += "-client"
 	}
 
-	certFile = "./" + defaultName + ".pem"
+	certFile = "./" + defaultName + ".crt"
 	if m.certFile != "" {
 		certFile = m.certFile
 	}
-	keyFile = "./" + defaultName + "-key.pem"
+	keyFile = "./" + defaultName + ".key"
 	if m.keyFile != "" {
 		keyFile = m.keyFile
 	}
@@ -199,7 +199,7 @@ func randomSerialNumber() *big.Int {
 
 func (m *mkcert) makeCertFromCSR() {
 	if m.caKey == nil {
-		log.Fatalln("ERROR: can't create new certificates because the CA key (rootCA-key.pem) is missing")
+		log.Fatalln("ERROR: can't create new certificates because the CA key (rootCA.key) is missing")
 	}
 
 	csrPEMBytes, err := ioutil.ReadFile(m.csrPath)
